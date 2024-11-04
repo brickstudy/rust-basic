@@ -1,12 +1,12 @@
 use chrono::{DateTime, FixedOffset, Utc};
-
+use super::repo;
 
 #[derive(Debug)]
 pub struct SignUpForm {
-    email: String,
-    password: String,
-    username: String,
-    created_time: DateTime<FixedOffset>,
+    pub email: String,
+    pub password: String,
+    pub username: String,
+    pub created_time: DateTime<FixedOffset>,
 }
 
 impl SignUpForm {
@@ -21,5 +21,10 @@ impl SignUpForm {
             username,
             created_time,
         }
+    }
+    pub fn post_user_auth(sign_up_form: &SignUpForm) {
+        repo::insert_user(sign_up_form);
+        let result = repo::select_user_with_email(&sign_up_form.email);
+        println!("{:?}", result);
     }
 }

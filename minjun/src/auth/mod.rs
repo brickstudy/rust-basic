@@ -1,6 +1,7 @@
 pub mod signup;
 pub mod login;
 pub mod input;
+pub mod repo;
 
 use signup::SignUpForm;
 use login::LogInForm;
@@ -11,6 +12,7 @@ fn sign_up() {
     let password: String = get_password();
     let username: String = get_username();
     let sign_up_form: SignUpForm = SignUpForm::new(email, password, username);
+    SignUpForm::post_user_auth(&sign_up_form);
     println!("{:?}", sign_up_form);
 }
 
