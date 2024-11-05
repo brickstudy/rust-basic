@@ -1,1 +1,6 @@
+# init
 /jaeseung/target/
+/minjun/target/
+
+# env
+.env
