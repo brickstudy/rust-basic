@@ -1,0 +1,1 @@
+pub static USER_REPO: repo::UserFileRepository = UserFileRepository {};
