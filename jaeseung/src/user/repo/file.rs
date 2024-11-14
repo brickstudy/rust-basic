@@ -2,12 +2,9 @@ use std::fs::OpenOptions;
 use std::io::{Read, Write};
 use std::ops::Deref;
 
-use super::User;
+use crate::user::User;
 
-pub trait UserRepository {
-    fn find_user_by_id(&self, id: &Box<String>) -> Result<Option<User>, String>;
-    fn save_user(&self, user: User) -> Result<(), String>;
-}
+use super::UserRepository;
 
 pub struct UserFileRepository;
 
@@ -41,5 +38,4 @@ impl UserRepository for UserFileRepository {
         file.write(content.as_bytes()).expect("write file Error 발생!");
         Ok(())
     }
-    
 }

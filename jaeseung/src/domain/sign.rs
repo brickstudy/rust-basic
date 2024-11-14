@@ -1,4 +1,6 @@
 use crate::get_input;
+use crate::dependency::USER_REPO;
+use crate::user::{User, UserRepository};
 
 pub fn sign_in() -> Result<(), String> {
     let id = get_input("ID 를 입력해 주세요");

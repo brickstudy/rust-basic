@@ -1,4 +1,7 @@
+use std::ops::Deref;
+use crate::user::UserRepository;
 use crate::utils::get_input;
+use crate::dependency::USER_REPO;
 
 pub fn login() -> Result<(), String> {
     let id = get_input("ID 를 입력해 주세요");

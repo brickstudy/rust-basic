@@ -1,12 +1,12 @@
-use std::ops::Deref;
-
-mod utils;
-use utils::*;
-
 mod domain;
+mod utils;
+mod dependency;
+mod user;
+
+use std::ops::Deref;
+use utils::*;
 use domain::*;
 
-// TODO : 함수 모듈화하기
 fn main() {
     loop {
         let menu = print_menu_form(&["로그인", "회원가입"]);
