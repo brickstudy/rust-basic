@@ -1,0 +1,10 @@
+---
+name: "[Keyword] ${}주차 - ${}장"
+about: 이번 주차에 읽은 내용에서 중요하다고 생각되는 keyword 를 공유합니다.
+title: ''
+labels: ''
+assignees: ''
+
+---
+
+
