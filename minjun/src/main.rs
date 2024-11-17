@@ -1,5 +1,11 @@
 mod auth;
+mod app;
 
-fn main() {
-    auth::run();
+#[tokio::main]
+async fn main() {
+    // cli 실행
+    // auth::run();
+
+    // api 실행
+    app::run().await;
 }
