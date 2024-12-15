@@ -1,7 +1,7 @@
-use std::ops::Deref;
+use crate::dependency::USER_REPO;
 use crate::user::UserRepository;
 use crate::utils::get_input;
-use crate::dependency::USER_REPO;
+use std::ops::Deref;
 
 pub fn login() -> Result<(), String> {
     let id = get_input("ID 를 입력해 주세요");
@@ -11,6 +11,6 @@ pub fn login() -> Result<(), String> {
 
     match user_opt {
         Some(user) if user.password.eq(password.deref()) => Ok(()),
-        _ => Err("id, password 를 다시 확인해 주세요.".to_string())
+        _ => Err("id, password 를 다시 확인해 주세요.".to_string()),
     }
 }

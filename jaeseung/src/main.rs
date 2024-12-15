@@ -1,11 +1,11 @@
-mod domain;
-mod utils;
 mod dependency;
+mod domain;
 mod user;
+mod utils;
 
-use std::ops::Deref;
-use utils::*;
 use domain::*;
+use std::{collections::HashMap, ops::Deref};
+use utils::*;
 
 fn main() {
     loop {
