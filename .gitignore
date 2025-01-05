@@ -1,2 +1,7 @@
+# init
 /jaeseung/target/
 /jaeseung-blockchain/target/
+/minjun/target/
+
+# env
+.env
