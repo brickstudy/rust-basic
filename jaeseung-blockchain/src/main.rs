@@ -1,5 +1,6 @@
 mod block;
 mod chain;
+mod constants;
 
 use block::Block;
 
