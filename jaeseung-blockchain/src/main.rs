@@ -1,4 +1,5 @@
 mod block;
+mod chain;
 
 use block::Block;
 

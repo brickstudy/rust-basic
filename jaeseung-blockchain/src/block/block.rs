@@ -4,7 +4,7 @@ use sha256::digest;
 
 use rs_merkle::{algorithms::Sha256, Hasher, MerkleTree};
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)] // TODO : Copy 와 Clone 의 차이점?
 pub struct Block {
     header: BlockHeader,
     data: Vec<String>,
@@ -32,7 +32,7 @@ impl Block {
     }
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 struct BlockHeader {
     version: String,
     height: i32, // 블록의 높이. 블록 체인에 연결된 블록의 수
