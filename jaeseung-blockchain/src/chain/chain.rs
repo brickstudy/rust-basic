@@ -1,4 +1,4 @@
-use crate::block::Block;
+use crate::{block::Block, constants::DIFFICULTY_ADJUSTMENT_INTERVAL_COUNT};
 
 #[derive(Debug)]
 pub struct Chain {
@@ -12,8 +12,8 @@ impl Chain {
         })
     }
 
-    pub fn get_length(&self) -> usize {
-        self.block_chain.len()
+    pub fn get_length(&self) -> u32 {
+        self.block_chain.len() as u32
     }
 
     pub fn get_lastest_block(&self) -> Option<&Block> {
@@ -24,10 +24,23 @@ impl Chain {
         let previous_block = self
             .get_lastest_block()
             .ok_or("previous_block not exist.")?;
-        let new_block = Block::new(previous_block, 0, data)?;
+        let adjustment_block = self.get_adjustment_block()?;
+
+        let new_block = Block::new(previous_block, data, &adjustment_block)?;
 
         self.block_chain.push(new_block); // TODO : 안전할까?
         Ok(self)
+    }
+
+    fn get_adjustment_block(&self) -> Result<Block, String> {
+        let current_length = self.get_length();
+
+        match current_length {
+            ..DIFFICULTY_ADJUSTMENT_INTERVAL_COUNT => Block::new_genesis(),
+            _ => Ok(self.block_chain
+                [(current_length - DIFFICULTY_ADJUSTMENT_INTERVAL_COUNT) as usize]
+                .clone()),
+        }
     }
 }
 

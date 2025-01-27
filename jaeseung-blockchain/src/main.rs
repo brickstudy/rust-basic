@@ -3,9 +3,14 @@ mod chain;
 mod constants;
 
 use block::Block;
+use chain::Chain;
 
 fn main() {
-    let block = Block::new_genesis();
+    let mut chain = Chain::new().unwrap();
 
-    print!("{:?}", block);
+    for x in 1..30000 {
+        chain.add_block(&vec![format!("data-{x}").to_string()]);
+    }
+
+    print!("{:#?}", chain);
 }

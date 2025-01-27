@@ -4,6 +4,8 @@ use sha256::digest;
 
 use rs_merkle::{algorithms::Sha256, Hasher, MerkleTree};
 
+use to_binary::BinaryString;
+
 use crate::constants::{
     BLOCK_GENERATION_INTERVAL_MINUTE, BLOCK_GENERATION_MILLIS, DIFFICULTY_ADJUSTMENT_INTERVAL_COUNT,
 };
@@ -26,7 +28,6 @@ impl Block {
                 Self::unsafe_get_timestamp(),
                 &["0"; 64].join(""),
                 0,
-                0,
                 &data,
             )?,
             data: data,
@@ -35,7 +36,6 @@ impl Block {
 
     pub fn new(
         previous_block: &Block,
-        nonce: i32,
         data: &Vec<String>,
         adjustment_block: &Block,
     ) -> Result<Block, String> {
@@ -52,7 +52,6 @@ impl Block {
                 p_header.height + 1,
                 new_timestamp,
                 &p_header.hash,
-                nonce,
                 difficulty,
                 data,
             )?,
@@ -69,7 +68,7 @@ impl Block {
         match new_height {
             0..=9 => 0,
             10..=19 => 1,
-            h if h % 10 != i32::from(DIFFICULTY_ADJUSTMENT_INTERVAL_COUNT) => {
+            h if h % 10 != DIFFICULTY_ADJUSTMENT_INTERVAL_COUNT as i32 => {
                 previous_block.header.difficulty
             }
             _ => {
@@ -118,25 +117,42 @@ impl BlockHeader {
         height: i32,
         timestamp: u64,
         previous_hash: &String,
-        nonce: i32,
         difficulty: i32,
         data: &Vec<String>,
     ) -> Result<BlockHeader, String> {
+        let prefix_zero = "0".repeat(difficulty as usize);
+
         let merkle_root = Self::make_merkle_root(data).ok_or("Merkle Tree Parsing Failed")?;
 
-        Ok(BlockHeader {
-            version: Self::VERSION.to_string(),
-            height,
-            timestamp,
-            hash: Self::make_block_hash(
-                // TODO : 여기서 바로 마이닝을 하자.
+        let mut nonce = 0;
+
+        // TODO : closure 와 꼬리 재귀를 써서 할 순 없을까?
+        let (nonce, hash) = loop {
+            nonce += 1;
+
+            let hash = Self::make_block_hash(
                 height,
                 timestamp,
                 &merkle_root,
                 previous_hash,
                 nonce,
                 difficulty,
-            ),
+            );
+
+            let binary = BinaryString::from_hex(&hash)
+                .map_err(|_| "hex to binary failed".to_string())?
+                .to_string();
+
+            if binary.as_str().starts_with(prefix_zero.as_str()) {
+                break (nonce, hash);
+            }
+        };
+
+        Ok(BlockHeader {
+            version: Self::VERSION.to_string(),
+            height,
+            timestamp,
+            hash,
             previous_hash: Some(previous_hash.clone()),
             merkle_root,
             nonce,
@@ -172,22 +188,5 @@ impl BlockHeader {
             difficulty.to_string()
         );
         digest(target)
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_new_genesis() {
-        let actual = Block::new_genesis().unwrap();
-
-        let data = vec![Block::GENESIS_DATA.to_string()];
-        let expected = Block {
-            header: BlockHeader::make(0, &["0"; 64].join(""), 0, &data).unwrap(),
-            data,
-        };
-        assert_eq!(actual, expected);
     }
 }
