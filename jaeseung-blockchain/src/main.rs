@@ -8,7 +8,7 @@ use chain::Chain;
 fn main() {
     let mut chain = Chain::new().unwrap();
 
-    for x in 1..30000 {
+    for x in 1..10 {
         chain.add_block(&vec![format!("data-{x}").to_string()]);
     }
 

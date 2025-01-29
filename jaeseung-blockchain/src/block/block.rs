@@ -68,7 +68,7 @@ impl Block {
         match new_height {
             0..=9 => 0,
             10..=19 => 1,
-            h if h % 10 != DIFFICULTY_ADJUSTMENT_INTERVAL_COUNT as i32 => {
+            h if h % DIFFICULTY_ADJUSTMENT_INTERVAL_COUNT as i32 != 0 => {
                 previous_block.header.difficulty
             }
             _ => {
