@@ -1,22 +1,29 @@
-use std::{convert::Infallible, net::SocketAddr};
+use std::{convert::Infallible, net::SocketAddr, sync::OnceLock};
 
 use futures::{SinkExt, StreamExt};
-use hyper::{Body, Server};
+use hyper::{upgrade, Body, Request, Response, Server};
 use routerify::{Router, RouterService};
-use routerify_websocket::{upgrade_ws, Message, WebSocket};
+use routerify_websocket::{upgrade_ws, upgrade_ws_with_config, Message, WebSocket};
 
-pub struct P2PServer {
-    sockets: Vec<WebSocket>,
-}
+pub struct P2PServer {}
 
 impl P2PServer {
-    pub fn new() -> P2PServer {
-        P2PServer { sockets: vec![] }
+    pub const sockets: Vec<&WebSocket> = vec![];
+
+    // P2PServer 는 하나의 인스턴스만 존재한다.
+    pub fn new() -> &'static P2PServer {
+        static INSTANCE: OnceLock<P2PServer> = OnceLock::new();
+        INSTANCE.get_or_init(|| P2PServer {})
     }
 
-    pub async fn listen(&self, port: u16) {
+    pub async fn listen(&'static self, port: u16) {
         let router: Router<Body, Infallible> = Router::builder()
-            .any_method("/", upgrade_ws(Self::ws_handler))
+            .any_method("/", upgrade_ws(|ws| self.connect_socket(ws)))
+            // upgrade_ws 의 handler 는 static 한 무언가를 받는 것 같다.
+            .post("/addToPeer", move |req| async move {
+                let response = self.connect_to_peer(req);
+                Ok(response)
+            })
             .build()
             .unwrap();
 
@@ -31,8 +38,15 @@ impl P2PServer {
         }
     }
 
-    async fn ws_handler(ws: WebSocket) {
+    fn connect_to_peer(&'static self, req: Request<Body>) {
+        return Response::new("I also serve http requests".into());
+    }
+
+    async fn connect_socket(&'static self, ws: WebSocket) {
         println!("New websocket connection: {}", ws.remote_addr());
+
+        // 참조를 sockets 에 저장.
+        Self::sockets.push(&ws);
 
         // The `WebSocket` implements the `Sink` and `Stream` traits
         // to read and write messages.
@@ -50,7 +64,7 @@ impl P2PServer {
             }
 
             // Send a text message.
-            let send_msg = Message::text("Hello world");
+            let send_msg = Message::text("msg from server");
             tx.send(send_msg).await.unwrap();
         }
     }
