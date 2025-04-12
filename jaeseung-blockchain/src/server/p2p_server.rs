@@ -38,7 +38,7 @@ impl P2PServer {
         }
     }
 
-    fn connect_to_peer(&'static self, req: Request<Body>) {
+    fn connect_to_peer(&'static self, req: Request<Body>) -> Response<Body> {
         return Response::new("I also serve http requests".into());
     }
 
