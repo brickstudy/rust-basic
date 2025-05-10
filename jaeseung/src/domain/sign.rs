@@ -1,5 +1,5 @@
-use crate::get_input;
 use crate::dependency::USER_REPO;
+use crate::get_input;
 use crate::user::{User, UserRepository};
 
 pub fn sign_in() -> Result<(), String> {
@@ -14,7 +14,10 @@ pub fn sign_in() -> Result<(), String> {
             let password_check = get_input("비밀번호를 다시 입력해 주세요");
 
             if password == password_check {
-                USER_REPO.save_user(User { id: id.to_string(), password: password.to_string() })
+                USER_REPO.save_user(User {
+                    id: id.to_string(),
+                    password: password.to_string(),
+                })
             } else {
                 Err("비밀번호가 다릅니다. 처음부터 다시 시도해 주세요.".to_string())
             }

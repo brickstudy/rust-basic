@@ -14,6 +14,8 @@ pub fn get_input(order: &str) -> Box<String> {
     io::stdout().flush().expect("Flush 실패!");
 
     let mut input = String::new();
-    io::stdin().read_line(&mut input).expect("read_line Error 발생!");
+    io::stdin()
+        .read_line(&mut input)
+        .expect("read_line Error 발생!");
     Box::from(input.trim().to_string())
 }
